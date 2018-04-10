@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.punuo.mapper.UserMapper">
+
+    <!--<select id="getUserByUserName" resultType="com.punuo.bean.User">-->
+        <!--SELECT * FROM users WHERE userName=#{userName}-->
+    <!--</select>-->
+
+    <select id="getUserByUserName" resultMap="userMap">
+        SELECT a.id as a_id,a.userName,a.userId,a.password,a.role as a_role,b.id as b_id ,b.role as b_role FROM users a LEFT OUTER JOIN
+         role b ON a.role = b.id WHERE a.userName=#{userName}
+    </select>
+    <resultMap id="userMap" type="com.punuo.bean.User">
+        <id property="id" column="a_id"/>
+        <result property="userName" column="userName"/>
+        <result property="userId" column="userId"/>
+        <result property="password" column="password"/>
+
+        <!-- 指定联合查询出的角色字段的封装 -->
+        <association property="role" javaType="com.punuo.bean.Role">
+            <id property="id" column="b_id"/>
+            <result property="roleName" column="b_role"/>
+        </association>
+    </resultMap>
+    
+    <select id="getMaxUserId" resultType="java.lang.String">
+        SELECT userId FROM users ORDER BY id DESC LIMIT 1
+    </select>
+
+    <insert id="saveUser" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO users(userName,userId,password) VALUES (#{userName},#{userId},#{password})
+    </insert>
+
+</mapper>
